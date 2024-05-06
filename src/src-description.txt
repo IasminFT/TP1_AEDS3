@@ -1,0 +1,10 @@
+SRC
+Pasta com arquivos fonte (.cpp) que compõem a implementação do projeto.
+
+generator.cpp: Implementação do gerador de dados aleatórios.
+sequential.cpp: Implementação da estrutura de dados sequencial e seus métodos de busca.
+binary_tree.cpp: Implementação da árvore binária e seus métodos de busca.
+balanced_binary_tree.cpp: Implementação da árvore binária balanceada e seus métodos de busca.
+experiment.cpp: Implementação dos experimentos conforme descrito na descrição do projeto.
+analysis.cpp: Implementação da análise dos resultados dos experimentos e cálculo dos números médios de comparações e tempo de execução.
+main.cpp: Arquivo principal que organiza e executa os experimentos.
