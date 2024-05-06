@@ -1,0 +1,42 @@
+Implementar, a partir do Gerador de Dados, os seguintes algoritmos.
+
+- Estrutura de Dados Sequencial
+- Árvore Binária
+- Árvore Binária Balanceada
+
+Cada algoritmo deve percorrer a estrutura e buscar os dados de acordo com sua chave de busca, retornando os valores dos dados referentes à chave inserida.
+
+
+- Gerador de da base de Dados: 	
+	Algoritmo para gerar arquivos de textos com os registros que vão compor a base de dados.
+	Dados devem ser gerados aleatoriamente.
+	
+	Arquivos:
+	CHAVES ORDENADAS:
+		1- 100 registros
+		2- 500 registros
+		3- 1000 registros
+		4- 5000 registros
+		5- 10000 registros
+	CHAVES NÃO ORDENADAS:
+		1- 100 registros
+		2- 500 registros
+		3- 1000 registros
+		4- 5000 registros
+		5- 10000 registros
+	
+	Composição de cada arquivo: 
+		cada linha = chave (int), dado1 (valor inteiro), dado2 (char [1000])
+			
+Execução do código: 
+	Deve-se realizar a busca de 15 chaves de pesquisa distintas, aleatórias e presentes na estrutura de dados e, também, 15 chaves de pesquisa distintas, aleatórias e inexistente na estrutura de dados.
+	Ao término do experimento o grupo terá 300 amostras: 15 chaves de busca x 2 tipos de busca (presente, não presente na base de dados) x 5 arquivos de tamanhos diferentes x 2 tipos de arquivos (ordenado, não ordenado).
+
+
+Fazer tabela com os dados:
+	Tamanho do Arquivo
+	Tipo do Arquivo (Ordanado ou Não ordenado)
+	Tipo de Busca Feita (Sequencial, Binaria ou AVL)
+	Tempo Médio (das 15 buscas) e Número de Comparações de cada tipo de busca feito
+	
+	
