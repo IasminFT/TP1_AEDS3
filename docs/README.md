@@ -9,6 +9,10 @@ Cada estrutura contém um algoritmo para gerar arquivos .txt que e gera para cad
 Segue abaixo as instruções necessárias para a excecução do projeto.
 
 ## Conteúdo ##
+Pasta docs contendo:
+1. Arquivo Readme
+
+   
 Pasta src contendo:
 1. Pasta AAVL
    
