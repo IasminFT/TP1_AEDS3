@@ -3,16 +3,7 @@ import string
 import time
 
 class NoArvoreBinaria:
-    """Nó para uma Árvore Binária."""
     def __init__(self, chave, dado1, dado2):
-        """
-        Inicializa um nó da árvore binária.
-
-        Parâmetros:
-            chave (int): Chave do nó.
-            dado1: Primeiro dado associado à chave.
-            dado2: Segundo dado associado à chave.
-        """
         self.chave = chave
         self.dado1 = dado1
         self.dado2 = dado2
@@ -20,20 +11,10 @@ class NoArvoreBinaria:
         self.direita = None
 
 class ArvoreBinariaBusca:
-    """Árvore Binária de Busca."""
     def __init__(self):
-        """Inicializa uma árvore binária de busca."""
         self.raiz = None
 
     def inserir(self, chave, dado1, dado2):
-        """
-        Insere um nó na árvore binária de busca.
-
-        Parâmetros:
-            chave (int): Chave do nó.
-            dado1: Primeiro dado associado à chave.
-            dado2: Segundo dado associado à chave.
-        """
         novo_no = NoArvoreBinaria(chave, dado1, dado2)
         if self.raiz is None:
             self.raiz = novo_no
@@ -52,132 +33,75 @@ class ArvoreBinariaBusca:
                     atual = atual.direita
 
     def buscar(self, chave):
-        """
-        Busca por uma chave na árvore binária de busca.
-
-        Parâmetros:
-            chave (int): Chave a ser buscada.
-
-        Retorna:
-            (tuple): Tupla contendo o nó encontrado (ou None), o tempo de busca e o número de iterações.
-        """
         tempo_inicio = time.time()
         atual = self.raiz
-        iteracoes = 0
+        interacoes = 0
         while atual is not None:
-            iteracoes += 1
+            interacoes += 1
             if chave == atual.chave:
                 tempo_fim = time.time()
-                return atual, tempo_fim - tempo_inicio, iteracoes
+                return atual, tempo_fim - tempo_inicio, interacoes
             elif chave < atual.chave:
                 atual = atual.esquerda
             else:
                 atual = atual.direita
         tempo_fim = time.time()
-        return None, tempo_fim - tempo_inicio, iteracoes
+        return None, tempo_fim - tempo_inicio, interacoes
 
 class BuscaNumerosQueExistem:
-    """Classe para buscar números que existem na árvore."""
     def __init__(self, arvore, num_buscas, num_entradas):
-        """
-        Inicializa a busca por números que existem.
-
-        Parâmetros:
-            arvore (ArvoreBinariaBusca): Árvore binária de busca.
-            num_buscas (int): Número de buscas a serem realizadas.
-            num_entradas (int): Número total de chaves na árvore.
-        """
         self.arvore = arvore
         self.num_buscas = num_buscas
         self.num_entradas = num_entradas
 
     def buscar_numeros_que_existem(self):
-        """Realiza buscas por números que existem na árvore."""
         resultados = []
         for _ in range(self.num_buscas):
             chave = random.choice(range(1, self.num_entradas + 1))
-            resultado, tempo, iteracoes = self.arvore.buscar(chave)
-            resultados.append((chave, resultado, tempo, iteracoes))
+            resultado, tempo, interacoes = self.arvore.buscar(chave)
+            resultados.append((chave, resultado, tempo, interacoes))
         return resultados
 
 class BuscaNumerosQueNaoExistem:
-    """Classe para buscar números que não existem na árvore."""
-    def __init__(self, arvore, num_buscas, num_entradas, tempo_limite=1):
-        """
-        Inicializa a busca por números que não existem.
-
-        Parâmetros:
-            arvore (ArvoreBinariaBusca): Árvore binária de busca.
-            num_buscas (int): Número de buscas a serem realizadas.
-            num_entradas (int): Número total de chaves na árvore.
-            tempo_limite (float): Tempo máximo permitido para busca por cada chave.
-        """
+    def __init__(self, arvore, dados, num_buscas, num_entradas):
         self.arvore = arvore
+        self.dados = dados
         self.num_buscas = num_buscas
         self.num_entradas = num_entradas
-        self.tempo_limite = tempo_limite
 
     def buscar_numeros_que_nao_existem(self):
-        """Realiza buscas por números que não existem na árvore."""
-        numeros_unicos = set(range(1, self.num_entradas + 1))
+        numeros_unicos = set(entry[0] for entry in self.dados)
         numeros_nao_encontrados = []
 
-        for _ in range(self.num_buscas):
-            tempo_inicio = time.time()
-            while True:
-                num_aleatorio = random.randint(1, self.num_entradas * 2)
-                if num_aleatorio not in numeros_unicos:
-                    resultado, tempo, iteracoes = self.arvore.buscar(num_aleatorio)
-                    if tempo > self.tempo_limite:
-                        numeros_nao_encontrados.append((num_aleatorio, tempo, iteracoes))
-                        break
-            tempo_fim = time.time()
-            if tempo_fim - tempo_inicio > self.tempo_limite:
-                break
-
+        while len(numeros_nao_encontrados) < self.num_buscas:
+            num_aleatorio = random.randint(1, self.num_entradas * 2)
+            if num_aleatorio not in numeros_unicos:
+                resultado, tempo, interacoes = self.arvore.buscar(num_aleatorio)
+                if not resultado:
+                    numeros_nao_encontrados.append((num_aleatorio, tempo, interacoes))
         return numeros_nao_encontrados
 
-def gerar_dados(num_entradas, ordenado=False, intervalo_dado1=(1, 100)):
-    """
-    Gera dados para preencher a árvore binária de busca.
-
-    Parâmetros:
-        num_entradas (int): Número de chaves a serem geradas.
-        ordenado (bool): Indica se as chaves devem ser geradas ordenadamente.
-        intervalo_dado1 (tuple): Intervalo de valores para o primeiro dado.
-
-    Retorna:
-        list: Lista de tuplas contendo as chaves e os dados gerados.
-    """
+def gerar_dados(num_entradas, ordenado=False):
     dados = []
     chaves = list(range(1, num_entradas + 1))
     if not ordenado:
         random.shuffle(chaves)
 
     for chave in chaves:
-        dado1 = random.randint(intervalo_dado1[0], intervalo_dado1[1])
+        dado1 = random.randint(1, 100)
         dado2 = ''.join(random.choice(string.ascii_letters) for _ in range(10))
         dados.append((chave, dado1, dado2))
     return dados
 
 def criar_arquivo_de_dados(dados, nome_arquivo):
-    """
-    Cria um arquivo de dados com os dados fornecidos.
-
-    Parâmetros:
-        dados (list): Lista de tuplas contendo os dados a serem escritos no arquivo.
-        nome_arquivo (str): Nome do arquivo a ser criado.
-    """
     with open(nome_arquivo, 'w') as arquivo:
         for entrada in dados:
             arquivo.write(f"{entrada[0]} {entrada[1]} {entrada[2]}\n")
 
 def main():
-    print("#########################################################")
-    num_entradas = int(input("Número de chaves: "))
-    quantidade_buscas = int(input("Quantidade chaves aleatórias a buscar: "))
-    opcao_ordenado = input("Com ordenação(S) Sem ordenação(N): ").strip().lower()
-    print("#########################################################")
+    num_entradas = int(input("Número de chaves no arquivo: "))
+    quantidade_buscas = int(input("Quantidade de chaves aleatórias a buscar: "))
+    opcao_ordenado = input("Chaves ordenadas? (S/N): ").strip().lower()
     dados_ordenados = opcao_ordenado == 's'
     dados = gerar_dados(num_entradas, ordenado=dados_ordenados)
     criar_arquivo_de_dados(dados, 'dados.txt')
@@ -190,29 +114,33 @@ def main():
     resultados_existente = busca_existente.buscar_numeros_que_existem()
 
     print("Busca pelos números que existem:")
-    for chave, resultado, tempo, iteracoes in resultados_existente:
+    for chave, resultado, tempo, interacoes in resultados_existente:
         if resultado:
-            print(f"Chave: {chave}, encontrada, Tempo médio de pesquisa: {tempo:.6f} segundos, Iterações: {iteracoes}")
+            print(f"Chave: {chave}, encontrada, Tempo médio de pesquisa: {tempo:.6f} segundos, Interacoes: {interacoes}")
         else:
-            print(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo:.6f} segundos, Iterações: {iteracoes}")
+            print(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo:.6f} segundos, Interacoes: {interacoes}")
 
     input("Pressione Enter para continuar e buscar números que não existem...")
     print()
-    
-    busca_nao_existente = BuscaNumerosQueNaoExistem(arvore, quantidade_buscas, num_entradas)
+
+    busca_nao_existente = BuscaNumerosQueNaoExistem(arvore, dados, quantidade_buscas, num_entradas)
     resultados_nao_existente = busca_nao_existente.buscar_numeros_que_nao_existem()
 
     print("\nBusca pelos números que não existem:")
-    for chave, tempo, iteracoes in resultados_nao_existente:
-        print(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo:.6f} segundos, Iterações: {iteracoes}")
+    for chave, tempo, interacoes in resultados_nao_existente:
+        print(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo:.6f} segundos, Interacoes: {interacoes}")
 
     tempo_total_existente = sum(tempo for _, _, tempo, _ in resultados_existente)
     tempo_total_nao_existente = sum(tempo for _, tempo, _ in resultados_nao_existente)
 
+    interacoes_total_existente = sum(interacoes for _, _, _, interacoes in resultados_existente)
+    interacoes_total_nao_existente = sum(interacoes for _, _, interacoes in resultados_nao_existente)
+
     print()
-    print(f"Tempo de busca números existentes: {tempo_total_existente:.6f} segundos")
-    print(f"Tempo de busca números não existentes: {tempo_total_nao_existente:.6f} segundos")
+    print(f"Tempo total das buscas pelos números que existem: {tempo_total_existente:.6f} segundos")
+    print(f"Tempo total das buscas pelos números que não existem: {tempo_total_nao_existente:.6f} segundos")
+    print(f"Número total de interações nas buscas pelos números que existem: {interacoes_total_existente}")
+    print(f"Número total de interações nas buscas pelos números que não existem: {interacoes_total_nao_existente}")
 
 if __name__ == "__main__":
     main()
-    
