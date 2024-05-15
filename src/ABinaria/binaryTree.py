@@ -50,7 +50,7 @@ class ArvoreBinariaBusca:
         tempo_fim = time.time()
         return None, tempo_fim - tempo_inicio, interacoes
 
-#Busca números que existem na árvore
+#busca números que existem na árvore
 class BuscaNumerosQueExistem:
     #recebe como entrada a árvore, os dados da árvore, o número de buscas a serem realizadas e o número total de entradas na árvore
     def __init__(self, arvore, num_buscas, num_entradas):
