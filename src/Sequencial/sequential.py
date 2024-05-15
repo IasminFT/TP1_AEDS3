@@ -45,11 +45,17 @@ class BuscaNumerosQueExistemSequencial:
     def buscar_numeros_que_existem(self):
         resultados = []
         total_interacoes = 0  # Inicializa o contador total de interações
-        for _ in range(self.num_buscas):
-            chave = random.choice(range(1, self.num_registros + 1))
-            resultado, tempo, interacoes = self.arvore.buscar(chave)  # Recebe o contador de interações
-            total_interacoes += interacoes  # Incrementa o contador total de interações
-            resultados.append((chave, resultado, tempo, interacoes))  # Adiciona o contador de interações à lista
+        chaves_escolhidas = set()  # Conjunto para armazenar chaves já escolhidas
+
+        while len(resultados) < self.num_buscas:
+            chave = random.randint(1, self.num_registros)
+            if chave not in chaves_escolhidas:
+                resultado, tempo, interacoes = self.arvore.buscar(chave)
+                total_interacoes += interacoes  # Incrementa o contador total de interações
+                if resultado:
+                    resultados.append((chave, resultado, tempo, interacoes))
+                chaves_escolhidas.add(chave)  # Adiciona a chave ao conjunto de chaves escolhidas
+
         return resultados, total_interacoes  # Retorna os resultados e o contador total de interações
 
 class BuscaNumerosQueNaoExistemSequencial:
