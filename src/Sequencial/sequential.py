@@ -26,13 +26,15 @@ class ArvoreSequencial:
     def buscar(self, chave):
         atual = self.raiz
         tempo_inicial = time.time()
+        interacoes = 0  # Inicializa o contador de interações
         while atual:
+            interacoes += 1  # Incrementa o contador de interações a cada passo
             if atual.chave == chave:
                 tempo_final = time.time()
-                return atual, tempo_final - tempo_inicial
+                return atual, tempo_final - tempo_inicial, interacoes  # Retorna o resultado e o contador de interações
             atual = atual.proximo
         tempo_final = time.time()
-        return None, tempo_final - tempo_inicial
+        return None, tempo_final - tempo_inicial, interacoes  # Retorna None e o contador de interações
 
 class BuscaNumerosQueExistemSequencial:
     def __init__(self, arvore, num_buscas, num_registros):
@@ -42,11 +44,13 @@ class BuscaNumerosQueExistemSequencial:
 
     def buscar_numeros_que_existem(self):
         resultados = []
+        total_interacoes = 0  # Inicializa o contador total de interações
         for _ in range(self.num_buscas):
             chave = random.choice(range(1, self.num_registros + 1))
-            resultado, tempo = self.arvore.buscar(chave)
-            resultados.append((chave, resultado, tempo))
-        return resultados
+            resultado, tempo, interacoes = self.arvore.buscar(chave)  # Recebe o contador de interações
+            total_interacoes += interacoes  # Incrementa o contador total de interações
+            resultados.append((chave, resultado, tempo, interacoes))  # Adiciona o contador de interações à lista
+        return resultados, total_interacoes  # Retorna os resultados e o contador total de interações
 
 class BuscaNumerosQueNaoExistemSequencial:
     def __init__(self, arvore, dados, num_buscas, num_registros):
@@ -59,13 +63,16 @@ class BuscaNumerosQueNaoExistemSequencial:
         numeros_unicos = set(entry[0] for entry in self.dados)
         numeros_nao_encontrados = []
 
+        total_interacoes = 0  # Inicializa o contador total de interações
+
         while len(numeros_nao_encontrados) < self.num_buscas:
-            num_aleatorio = random.randint(1, self.num_registros * 2)  # Use um limite maior
+            num_aleatorio = random.randint(1, self.num_registros * 2)
             if num_aleatorio not in numeros_unicos:
-                resultado, tempo = self.arvore.buscar(num_aleatorio)
+                resultado, tempo, interacoes = self.arvore.buscar(num_aleatorio)
+                total_interacoes += interacoes  # Incrementa o contador total de interações
                 if not resultado:
-                    numeros_nao_encontrados.append((num_aleatorio, tempo))
-        return numeros_nao_encontrados
+                    numeros_nao_encontrados.append((num_aleatorio, tempo, interacoes))
+        return numeros_nao_encontrados, total_interacoes  # Retorna os resultados e o contador total de interações
 
 def gerar_dados_sequencial(num_registros, ordenados=False):
     dados = []
@@ -82,11 +89,9 @@ def criar_arquivo_de_dados_sequencial(dados, nome_arquivo):
             arquivo.write(f"{entrada[0]} {entrada[1]} {entrada[2]}\n")
 
 def main_sequencial():
-    print("#########################################################")
-    num_registros = int(input("Número de chaves: "))
+    num_registros = int(input("Número de chaves no arquivo: "))
     num_buscas = int(input("Quantidade de chaves aleatórias a buscar: "))
-    ordenados_opcao = input("Com ordenação(S) Sem ordenação(N): ").strip().lower()
-    print("#########################################################")
+    ordenados_opcao = input("Chaves ordenadas? (S/N): ").strip().lower()
     dados_ordenados = ordenados_opcao == 's'
     dados = gerar_dados_sequencial(num_registros, ordenados=dados_ordenados)
     criar_arquivo_de_dados_sequencial(dados, 'dados_sequencial.txt')
@@ -96,31 +101,31 @@ def main_sequencial():
         arvore.inserir(*entrada)
 
     busca_existente = BuscaNumerosQueExistemSequencial(arvore, num_buscas, num_registros)
-    resultados_existente = busca_existente.buscar_numeros_que_existem()
+    resultados_existente, total_interacoes_existente = busca_existente.buscar_numeros_que_existem()
 
     print("Busca pelos números que existem:")
-    for chave, resultado, tempo in resultados_existente:
+    for chave, resultado, tempo, interacoes in resultados_existente:
         if resultado:
-            print(f"Chave: {chave}, encontrada, Tempo de pesquisa: {tempo:.6f} segundos")
-        else:
-            print(f"Chave: {chave}, não encontrada, Tempo de pesquisa: {tempo:.6f} segundos")
+            print(f"Chave: {chave}, encontrada, Tempo de pesquisa: {tempo:.6f} segundos, Interacoes: {interacoes}")
 
     input("Pressione Enter para continuar e buscar números que não existem...")
     print()
 
     busca_nao_existente = BuscaNumerosQueNaoExistemSequencial(arvore, dados, num_buscas, num_registros)
-    resultados_nao_existente = busca_nao_existente.buscar_numeros_que_nao_existem()
+    resultados_nao_existente, total_interacoes_nao_existente = busca_nao_existente.buscar_numeros_que_nao_existem()
 
     print("\nBusca pelos números que não existem:")
-    for chave, tempo in resultados_nao_existente:
-        print(f"Chave: {chave}, não encontrada, Tempo de pesquisa: {tempo:.6f} segundos")
+    for chave, tempo, interacoes in resultados_nao_existente:
+        print(f"Chave: {chave}, não encontrada, Tempo de pesquisa: {tempo:.6f} segundos, Interacoes: {interacoes}")
 
-    tempo_total_existente = sum(tempo for _, _, tempo in resultados_existente)
-    tempo_total_nao_existente = sum(tempo for _, tempo in resultados_nao_existente)
+    tempo_total_existente = sum(tempo for _, _, tempo, _ in resultados_existente)
+    tempo_total_nao_existente = sum(tempo for _, tempo, _ in resultados_nao_existente)
 
     print()
-    print(f"Tempo de busca números existentes: {tempo_total_existente:.6f} segundos")
-    print(f"Tempo de busca números não existentes: {tempo_total_nao_existente:.6f} segundos")
+    print(f"Tempo total das buscas pelos números que existem: {tempo_total_existente:.6f} segundos")
+    print(f"Tempo total das buscas pelos números que não existem: {tempo_total_nao_existente:.6f} segundos")
+    print(f"Total de interações nas buscas pelos números que existem: {total_interacoes_existente}")
+    print(f"Total de interações nas buscas pelos números que não existem: {total_interacoes_nao_existente}")
 
 if __name__ == "__main__":
     main_sequencial()
