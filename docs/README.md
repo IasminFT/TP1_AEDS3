@@ -37,7 +37,10 @@ Pasta src contendo:
 Para executar a busca de chaves no compilador, siga as seguintes etapas:
 
 1. Abra o compilador em seu ambiente de desenvolvimento.
-2. Configure a busca fornecendo as informações necessárias:
+   .Em Linux, abra o terminal no diretorio do arquivo e digite o seguinte comando:
+      python3 nomedoarquivo.py
+   
+3. Configure a busca fornecendo as informações necessárias:
 
   * Número de chaves no arquivo: [Insira o número de chaves no arquivo]
   * Quantidade de chaves aleatórias a buscar: [Insira a quantidade de chaves a buscar]
