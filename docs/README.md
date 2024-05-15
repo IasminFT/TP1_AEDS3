@@ -37,8 +37,8 @@ Pasta src contendo:
 Para executar a busca de chaves no compilador, siga as seguintes etapas:
 
 1. Abra o compilador em seu ambiente de desenvolvimento.
-   .Em Linux, abra o terminal no diretorio do arquivo e digite o seguinte comando:
-      python3 nomedoarquivo.py
+   --Em Linux, abra o terminal no diretorio do arquivo e digite o seguinte comando:
+      "python3 nomedoarquivo.py"
    
 3. Configure a busca fornecendo as informações necessárias:
 
