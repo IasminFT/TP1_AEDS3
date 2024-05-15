@@ -95,58 +95,59 @@ class ArvoreAVL:
     def inserir(self, chave, dado1, dado2):
         self.raiz = inserir(self.raiz, chave, dado1, dado2)
 
-    # Realiza uma busca na árvore por uma chave e retorna o nó encontrado, se existir, e o tempo gasto na busca.
+    # Realiza uma busca na árvore por uma chave e retorna o nó encontrado, o tempo gasto na busca e o número de interações.
     def buscar(self, chave):
         tempo_inicio = time.time()  # Registra o tempo de início da busca
-        no, tempo_busca = self._buscar(self.raiz, chave)
+        no, tempo_busca, interacoes = self._buscar(self.raiz, chave, 0)
         tempo_fim = time.time()
-        return no, tempo_fim - tempo_inicio
+        return no, tempo_fim - tempo_inicio, interacoes
 
-    def _buscar(self, no, chave):
-        if no is None or no.chave == chave:
-            return no, 0
-        if chave < no.chave:
-            return self._buscar(no.esquerda, chave)
-        return self._buscar(no.direita, chave)
+    def _buscar(self, no, chave, interacoes):
+        if no is None:
+            return None, 0, interacoes  # Retorna None quando a chave não é encontrada
+        interacoes += 1
+        if no.chave == chave:
+            return no, 0, interacoes  # Retorna o nó e o número de interações quando a chave é encontrada
+        elif chave < no.chave:
+            return self._buscar(no.esquerda, chave, interacoes)
+        else:
+            return self._buscar(no.direita, chave, interacoes)
 
 # Classe para buscar chaves que existem na árvore.
 class BuscadorChavesExistentes:
-    def __init__(self, arvore):
-        self.arvore = arvore
-
-    def buscar_chaves(self, chaves):
+    def buscar_chaves(self, arvore, chaves):
         resultados = []
         tempo_total = 0
+        interacoes_total = 0
 
         for chave in chaves:
-            resultado, tempo_busca = self.arvore.buscar(chave)
+            resultado, tempo_busca, interacoes = arvore.buscar(chave)
             tempo_total += tempo_busca
+            interacoes_total += interacoes
             if resultado:
-                resultados.append(f"Chave: {chave}, encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos")
+                resultados.append(f"Chave: {chave}, encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos, Interacoes: {interacoes}")
             else:
-                resultados.append(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos")
+                resultados.append(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos, Interacoes: {interacoes}")
 
-        return resultados, tempo_total
+        return resultados, tempo_total, interacoes_total
 
 # Classe para buscar chaves que não existem na árvore.
 class BuscadorChavesNaoExistentes:
-    def __init__(self, arvore, num_entradas):
-        self.arvore = arvore
-        self.num_entradas = num_entradas
-
-    def buscar_chaves(self, chaves):
+    def buscar_chaves(self, arvore, num_entradas, chaves):
         resultados = []
         tempo_total = 0
+        interacoes_total = 0
 
         for chave in chaves:
-            resultado, tempo_busca = self.arvore.buscar(chave)
+            resultado, tempo_busca, interacoes = arvore.buscar(chave)
             tempo_total += tempo_busca
+            interacoes_total += interacoes
             if resultado:
-                resultados.append(f"Chave: {chave}, encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos")
+                resultados.append(f"Chave: {chave}, encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos, Interacoes: {interacoes}")
             else:
-                resultados.append(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos")
+                resultados.append(f"Chave: {chave}, não encontrada, Tempo médio de pesquisa: {tempo_busca:.6f} segundos, Interacoes: {interacoes}")
 
-        return resultados, tempo_total
+        return resultados, tempo_total, interacoes_total
 
 # Gera dados aleatórios com chaves, valores inteiros e combinações de letras.
 def gerar_dados(num_entradas, ordenadas=False):
@@ -166,11 +167,9 @@ def criar_arquivo_dados(dados, nome_arquivo):
 
 # Função principal do programa.
 def main():
-    print("#########################################################")
-    num_entradas = int(input("Número de chaves : "))  # Solicita o número de chaves
+    num_entradas = int(input("Número de chaves no arquivo: "))  # Solicita o número de chaves
     quant_buscas = int(input("Quantidade de chaves aleatórias a buscar: "))  # Solicita a quantidade de buscas
-    opcao_ordenadas = input("Com ordenação(S) Sem ordenação(N): ").strip().lower()
-    print("#########################################################")
+    opcao_ordenadas = input("Chaves ordenadas? (S/N): ").strip().lower()
     dados_ordenados = opcao_ordenadas == 's'
     
     # Iniciar a contagem do tempo de inserção
@@ -190,8 +189,8 @@ def main():
     tempo_total_busca_chaves_existentes = 0
 
     # Realiza buscas em chaves aleatórias que existem e registra o tempo de cada busca.
-    buscador_chaves_existentes = BuscadorChavesExistentes(arvore)
-    resultados_chaves_existentes, tempo_total_busca_chaves_existentes = buscador_chaves_existentes.buscar_chaves(chaves_busca)
+    buscador_chaves_existentes = BuscadorChavesExistentes()
+    resultados_chaves_existentes, tempo_total_busca_chaves_existentes, interacoes_total_chaves_existentes = buscador_chaves_existentes.buscar_chaves(arvore, chaves_busca)
 
     print("\nBusca pelos números que existem:")
     for resultado in resultados_chaves_existentes:
@@ -203,18 +202,20 @@ def main():
     tempo_total_busca_chaves_nao_existentes = 0
 
     # Realiza buscas em chaves aleatórias que não existem e registra o tempo de cada busca.
-    buscador_chaves_nao_existentes = BuscadorChavesNaoExistentes(arvore, num_entradas)
-    resultados_chaves_nao_existentes, tempo_total_busca_chaves_nao_existentes = buscador_chaves_nao_existentes.buscar_chaves(chaves_nao_existem)
+    buscador_chaves_nao_existentes = BuscadorChavesNaoExistentes()
+    resultados_chaves_nao_existentes, tempo_total_busca_chaves_nao_existentes, interacoes_total_chaves_nao_existentes = buscador_chaves_nao_existentes.buscar_chaves(arvore, num_entradas, chaves_nao_existem)
 
     print("\nBusca pelos números que não existem:")
     for resultado in resultados_chaves_nao_existentes:
         print(resultado)
 
     tempo_total_todas_buscas = tempo_total_busca_chaves_existentes + tempo_total_busca_chaves_nao_existentes
+    interacoes_total_todas_buscas = interacoes_total_chaves_existentes + interacoes_total_chaves_nao_existentes
 
-    print(f"\nTempo de busca números existentes: {tempo_total_busca_chaves_existentes:.6f} segundos")
-    print(f"Tempo de busca números não existentes: {tempo_total_busca_chaves_nao_existentes:.6f} segundos")
+    print(f"\nTempo total das buscas pelos números que existem: {tempo_total_busca_chaves_existentes:.6f} segundos")
+    print(f"Tempo total das buscas pelos números que não existem: {tempo_total_busca_chaves_nao_existentes:.6f} segundos")
     print(f"Tempo total de todas as buscas: {tempo_total_todas_buscas:.6f} segundos")
+    print(f"Número total de interações em todas as buscas: {interacoes_total_todas_buscas}")
 
 if __name__ == "__main__":
     main()
